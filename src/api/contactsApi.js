@@ -20,7 +20,26 @@ export const api = createApi({
         method: 'DELETE',
       }),
     }),
+    register: builder.mutation({
+      query: (newUserData) => ({
+        url: 'users',
+        method: 'POST',
+        body: newUserData,
+      }),
+    }),
+    login: builder.mutation({
+      query: ({ username, password }) => ({
+        url: `users?username=${username}&password=${password}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
-export const { useGetContactsQuery, useAddContactMutation, useDeleteContactMutation } = api;
+export const {
+  useGetContactsQuery,
+  useAddContactMutation,
+  useDeleteContactMutation,
+  useRegisterMutation,
+  useLoginMutation,
+} = api;

@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import LoginForm from './LoginForm';
+import RegisterForm from './RegisterForm';
 import { useDispatch } from 'react-redux';
 import {
   useAddContactMutation,
   useDeleteContactMutation,
   useGetContactsQuery,
+  useLoginMutation,
+  useRegisterMutation,
 } from '../api/contactsApi';
 import { setFilter, fetchContacts, addContact } from '../redux/contactsSlice';
 import ContactForm from './PhoneBook/PhoneBookContactForm';
@@ -23,15 +27,13 @@ const App = () => {
 
   const [addContactMutation] = useAddContactMutation();
   const [deleteContactMutation] = useDeleteContactMutation();
+  const [loginMutation] = useLoginMutation();
+  const [registerMutation] = useRegisterMutation();
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const onAddContact = (newContact) => {
     setContacts((prevContacts) => [...prevContacts, newContact]);
-  };
-
-  const setName = () => {
-  };
-
-  const setNumber = () => {
   };
 
   const handleAddContact = async (newContact) => {
@@ -45,9 +47,6 @@ const App = () => {
       console.log('Contact added successfully', addedContact);
 
       onAddContact(addedContact);
-
-      setName('');
-      setNumber('');
     } catch (error) {
       console.error('Error adding contact:', error);
     }
@@ -66,18 +65,56 @@ const App = () => {
     }
   };
 
+  const handleLogin = async (loginData) => {
+    try {
+      const response = await loginMutation(loginData);
+
+      if (response.data && response.data.length > 0) {
+        console.log('Login successful', response);
+        setIsLoggedIn(true);
+      } else {
+        console.error('Invalid login credentials');
+      }
+    } catch (error) {
+      console.error('Login failed', error);
+    }
+  };
+
+  const handleRegister = async (registerData) => {
+    try {
+      const response = await registerMutation(registerData);
+
+      if (response.data && response.data.id) {
+        console.log('Registration successful', response);
+       
+      } else {
+        console.error('Invalid registration data');
+      }
+    } catch (error) {
+      console.error('Registration failed', error);
+    }
+  };
+
   return (
     <div>
-      <h1>Phonebook</h1>
-      <h2>Add a Contact</h2>
-      <ContactForm onAddContact={handleAddContact} />
-      <h2>Contacts</h2>
-      {}
-      <ContactList
-        contacts={contacts || []}
-        onDeleteContact={handleDeleteContact}
-        onAddContact={onAddContact}
-      />
+      {isLoggedIn ? (
+        <>
+          <h1>Phonebook</h1>
+          <h2>Add a Contact</h2>
+          <ContactForm onAddContact={handleAddContact} />
+          <h2>Contacts</h2>
+          <ContactList
+            contacts={contacts || []}
+            onDeleteContact={handleDeleteContact}
+            onAddContact={onAddContact}
+          />
+        </>
+      ) : (
+        <>
+          <LoginForm onLogin={handleLogin} />
+          <RegisterForm onRegister={handleRegister} />
+        </>
+      )}
     </div>
   );
 };
