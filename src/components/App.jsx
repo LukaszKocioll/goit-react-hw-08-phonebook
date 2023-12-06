@@ -86,7 +86,7 @@ const App = () => {
 
       if (response.data && response.data.id) {
         console.log('Registration successful', response);
-       
+        setIsLoggedIn(true);
       } else {
         console.error('Invalid registration data');
       }
@@ -95,11 +95,17 @@ const App = () => {
     }
   };
 
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setContacts([]);
+  };
+
   return (
     <div>
       {isLoggedIn ? (
         <>
           <h1>Phonebook</h1>
+          <button onClick={handleLogout}>Logout</button>
           <h2>Add a Contact</h2>
           <ContactForm onAddContact={handleAddContact} />
           <h2>Contacts</h2>

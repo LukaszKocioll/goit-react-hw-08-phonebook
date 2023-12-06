@@ -13,15 +13,15 @@ const AuthenticationPage = () => {
     e.preventDefault();
     try {
       const response = await login({ username: loginData.username, password: loginData.password });
-
-      if (response.data && response.data.length > 0) {
-        const user = response.data[0];
-        console.log('Login successful', user);
-        alert('Zalogowano pomyślnie!');
-        
-      } else {
+      if (response.error) {
         console.error('Login failed', response.error);
         alert('Błędne hasło lub login');
+      } else if (response.data.length > 0) {
+        console.log('Login successful', response.data);
+        alert('Zalogowano pomyślnie!');
+      } else {
+        console.error('Unexpected response', response);
+        alert('Wystąpił nieoczekiwany błąd podczas logowania');
       }
     } catch (error) {
       console.error('Login failed', error);
@@ -33,14 +33,12 @@ const AuthenticationPage = () => {
     e.preventDefault();
     try {
       const response = await register(registerData);
-
       if (response.error) {
         console.error('Registration failed', response.error);
         alert('Błąd podczas rejestracji');
       } else {
         console.log('Registration successful', response.data);
         alert('Zarejestrowano pomyślnie!');
-        
       }
     } catch (error) {
       console.error('Registration failed', error);
@@ -50,6 +48,17 @@ const AuthenticationPage = () => {
 
   const toggleForm = () => {
     setShowLoginForm(!showLoginForm);
+  };
+
+  const showNotification = (message) => {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.innerText = message;
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
   };
 
   return (
